@@ -14,12 +14,14 @@ contract LitNFT is ERC721URIStorage {
         console.log("I'm a lit NFT");
     }
 
-    function makeLitNft() public {
+    function makeLitNFT() public {
 
         uint256 newItemId = _tokenIds.current();
         _safeMint(msg.sender, newItemId);
-        _setTokenURI(newItemId, "deezlytok")
+        _setTokenURI(newItemId, "deezlytok");
 
-        tokenIds.increment();
+        console.log("An NFT w/ ID %s has been minted to %s", newItemId, msg.sender);
+        
+        _tokenIds.increment();
     }
 }
