@@ -18,7 +18,7 @@ contract LitNFT is ERC721URIStorage {
 
         uint256 newItemId = _tokenIds.current();
         _safeMint(msg.sender, newItemId);
-        _setTokenURI(newItemId, "deezlytok");
+        _setTokenURI(newItemId, "https://jsonkeeper.com/b/WUNK");
 
         console.log("An NFT w/ ID %s has been minted to %s", newItemId, msg.sender);
         
