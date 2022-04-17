@@ -2,10 +2,12 @@
 pragma solidity ^0.8.0;
 
 
+import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "hardhat/console.sol";
+import { Base64 } from "./libraries/Base64.sol";
 
 contract LitNFT is ERC721URIStorage {
     using Counters for Counters.Counter;
@@ -48,21 +50,45 @@ contract LitNFT is ERC721URIStorage {
     function makeLitNFT() public {
         uint256 newItemId = _tokenIds.current();
 
-        string memory first = pickRandomFirstWord(newItemId);
-        string memory second = pickRandomSecondWord(newItemId);
-        string memory third = pickRandomThirdWord(newItemId);
+    string memory first = pickRandomFirstWord(newItemId);
+    string memory second = pickRandomSecondWord(newItemId);
+    string memory third = pickRandomThirdWord(newItemId);
+    string memory combinedWord = string(abi.encodePacked(first, second, third));
 
-        
-        string memory finalSvg = string(abi.encodePacked(baseSvg, first, second, third, "</text></svg>"));
-        console.log("\n--------------------");
-        console.log(finalSvg);
-        console.log("--------------------\n");
+    string memory finalSvg = string(abi.encodePacked(baseSvg, combinedWord, "</text></svg>"));
 
-        _safeMint(msg.sender, newItemId);
-        _setTokenURI(newItemId, "data:application/json;base64,ewogICAgICAgICAgICAibmFtZSI6IkJ1Z3MgYnVubnkiLAogICAgICAgICAgICAiZGVzY3JpcHRpb24iOiJHZW5pdXMgYnVubnkiLAogICAgICAgICAgICAiaW1hZ2UiOiJkYXRhOmltYWdlL3N2Zyt4bWw7YmFzZTY0LFBITjJaeUI0Yld4dWN6MGlhSFIwY0RvdkwzZDNkeTUzTXk1dmNtY3ZNakF3TUM5emRtY2lJSEJ5WlhObGNuWmxRWE53WldOMFVtRjBhVzg5SW5oTmFXNVpUV2x1SUcxbFpYUWlJSFpwWlhkQ2IzZzlJakFnTUNBek5UQWdNelV3SWo0S0lDQWdJRHh6ZEhsc1pUNHVZbUZ6WlNCN0lHWnBiR3c2SUhkb2FYUmxPeUJtYjI1MExXWmhiV2xzZVRvZ2MyVnlhV1k3SUdadmJuUXRjMmw2WlRvZ01UUndlRHNnZlR3dmMzUjViR1UrQ2lBZ0lDQThjbVZqZENCM2FXUjBhRDBpTVRBd0pTSWdhR1ZwWjJoMFBTSXhNREFsSWlCbWFXeHNQU0ppYkdGamF5SWdMejRLSUNBZ0lEeDBaWGgwSUhnOUlqVXdKU0lnZVQwaU5UQWxJaUJqYkdGemN6MGlZbUZ6WlNJZ1pHOXRhVzVoYm5RdFltRnpaV3hwYm1VOUltMXBaR1JzWlNJZ2RHVjRkQzFoYm1Ob2IzSTlJbTFwWkdSc1pTSStSMjlrSjNOR2JIbGxjM1JUYjI0OEwzUmxlSFErQ2p3dmMzWm5QZz09IgogICAgICAgICAgICB9");
+    // Get all the JSON metadata in place and base64 encode it.
+    string memory json = Base64.encode(
+        bytes(
+            string(
+                abi.encodePacked(
+                    '{"name": "',
+                    // We set the title of our NFT as the generated word.
+                    combinedWord,
+                    '", "description": "A highly acclaimed collection of squares.", "image": "data:image/svg+xml;base64,',
+                    // We add data:image/svg+xml;base64 and then append our base64 encode our svg.
+                    Base64.encode(bytes(finalSvg)),
+                    '"}'
+                )
+            )
+        )
+    );
 
-        console.log("An NFT w/ ID %s has been minted to %s", newItemId, msg.sender);
-        
-        _tokenIds.increment();
+    // Just like before, we prepend data:application/json;base64, to our data.
+    string memory finalTokenUri = string(
+        abi.encodePacked("data:application/json;base64,", json)
+    );
+
+    console.log("\n--------------------");
+    console.log(finalTokenUri);
+    console.log("--------------------\n");
+
+    _safeMint(msg.sender, newItemId);
+    
+    // Update your URI!!!
+    _setTokenURI(newItemId, finalTokenUri);
+  
+    _tokenIds.increment();
+    console.log("An NFT w/ ID %s has been minted to %s", newItemId, msg.sender);
     }
 }
