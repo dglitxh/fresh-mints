@@ -2,22 +2,26 @@
 pragma solidity ^0.8.0;
 
 
+import "@openzeppelin/contracts/utils/Base64.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "hardhat/console.sol";
-import { Base64 } from "./libraries/Base64.sol";
+
 
 contract LitNFT is ERC721URIStorage {
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
+    event NFTMinted(address sender, uint256);
 
     string baseSvg = "<svg xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='xMinYMin meet' viewBox='0 0 350 350'><style>.base { fill: white; font-family: serif; font-size: 24px; }</style><rect width='100%' height='100%' fill='black' /><text x='50%' y='50%' class='base' dominant-baseline='middle' text-anchor='middle'>";
 
     string[] firstWords = ["Young", "Goth", "Greatest", "God's", "Last", "Lit"];
     string[] secondWords = ["Boy", "Stunner", "Ninja", "Samurai", "Coder", "Killa"];
-    string[] thirdWords = ["Dreamer", "Smiles", "Stunts", "Prays", "Wins", "Slimes"];
+    string[] thirdWords = ["Dreams", "Smiles", "Stunts", "Prays", "Wins", "Slimes"];
 
     constructor() ERC721("dzzyNFT", "dzzy") {
         console.log("I'm a lit NFT");
@@ -89,6 +93,7 @@ contract LitNFT is ERC721URIStorage {
     _setTokenURI(newItemId, finalTokenUri);
   
     _tokenIds.increment();
+    emit NFTMinted(msg.sender, newItemId);
     console.log("An NFT w/ ID %s has been minted to %s", newItemId, msg.sender);
     }
 }
